@@ -8,7 +8,8 @@ export type ScanPhase =
 
 export interface Photo {
   id: string;
-  url: string; // Blob URL
+  url?: string; // Blob URL or signed URL
+  storagePath?: string;
   timestamp: number;
   phase: ScanPhase;
 }
@@ -18,7 +19,8 @@ export interface Project {
   name: string;
   createdAt: number;
   photos: Photo[];
-  status: 'DRAFT' | 'PROCESSING' | 'COMPLETED';
+  status: 'onboarding' | 'scanning' | 'processing' | 'balancing' | 'complete';
+  reconJobId?: string;
 }
 
 export interface ScanState {
@@ -26,6 +28,7 @@ export interface ScanState {
   photos: Photo[];
   totalPhotos: number;
   lastAction: 'PHOTO_TAKEN' | 'PHASE_CHANGED' | 'IDLE';
+  activeJobId?: string;
 }
 
 // Service Adapter Interfaces
@@ -40,4 +43,6 @@ export interface KiriJobStatus {
   status: 'queued' | 'processing' | 'completed' | 'failed';
   progress: number; // 0-100
   previewUrl?: string;
+  glbUrl?: string;
+  errorMessage?: string;
 }

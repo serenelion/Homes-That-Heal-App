@@ -1,0 +1,16 @@
+project_id = "homes-that-heal-app"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+
+[db]
+major_version = 16
+
+[studio]
+port = 54323
+
+[edge_runtime]
+port = 54324

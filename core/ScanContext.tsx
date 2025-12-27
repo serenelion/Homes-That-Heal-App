@@ -10,14 +10,16 @@ type Action =
   | { type: 'INIT_PROJECT'; payload: Project }
   | { type: 'ADD_PHOTO'; payload: Photo }
   | { type: 'SET_PHASE'; payload: ScanPhase }
-  | { type: 'NEXT_PHASE' };
+  | { type: 'NEXT_PHASE' }
+  | { type: 'SET_JOB_ID'; payload: string | undefined };
 
 const initialState: State = {
   project: null,
   currentPhase: 'CORNER_1',
   photos: [],
   totalPhotos: 0,
-  lastAction: 'IDLE'
+  lastAction: 'IDLE',
+  activeJobId: undefined
 };
 
 const ScanContext = createContext<{
@@ -32,7 +34,8 @@ function scanReducer(state: State, action: Action): State {
         ...initialState,
         project: action.payload,
         photos: action.payload.photos,
-        totalPhotos: action.payload.photos.length
+        totalPhotos: action.payload.photos.length,
+        activeJobId: action.payload.reconJobId
       };
     case 'ADD_PHOTO':
       return {
@@ -54,6 +57,11 @@ function scanReducer(state: State, action: Action): State {
         ...state,
         currentPhase: nextPhase,
         lastAction: 'PHASE_CHANGED'
+      };
+    case 'SET_JOB_ID':
+      return {
+        ...state,
+        activeJobId: action.payload
       };
     default:
       return state;
