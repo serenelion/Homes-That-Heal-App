@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useScan } from '../core/ScanContext';
-import { Check, AlertTriangle, UploadCloud } from 'lucide-react';
+import { AlertTriangle, UploadCloud } from 'lucide-react';
 import { PipelineAPI } from '../services/pipeline';
 import { MIN_PHOTOS_TOTAL } from '../constants';
 
@@ -9,7 +9,7 @@ interface ResultsProps {
 }
 
 export const Results: React.FC<ResultsProps> = ({ onNavigate }) => {
-  const { state } = useScan();
+  const { state, dispatch } = useScan();
   const [uploading, setUploading] = useState(false);
 
   const isValid = state.totalPhotos >= MIN_PHOTOS_TOTAL;
@@ -17,9 +17,9 @@ export const Results: React.FC<ResultsProps> = ({ onNavigate }) => {
   const handleProcess = async () => {
     if (!state.project) return;
     setUploading(true);
-    // Simulate upload/start
     try {
-      await PipelineAPI.startKiri(state.project.id);
+      const jobId = await PipelineAPI.startKiri(state.project.id);
+      dispatch({ type: 'SET_JOB_ID', payload: jobId });
       onNavigate('processing');
     } catch (e) {
       console.error(e);

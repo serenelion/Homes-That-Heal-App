@@ -4,6 +4,7 @@ import { useScan } from '../core/ScanContext';
 import { AgentAPI } from '../services/agent';
 import { SpeechOut } from '../services/speech';
 import { StorageAPI } from '../services/storage';
+import { MIN_PHOTOS_PER_CORNER, MAX_PHOTOS_TOTAL } from '../constants';
 
 interface ScanSessionProps {
   onNavigate: (page: string) => void;
@@ -32,6 +33,12 @@ export const ScanSession: React.FC<ScanSessionProps> = ({ onNavigate }) => {
 
   const handleCapture = useCallback(async (blob: Blob) => {
     if (!state.project) return;
+    if (state.totalPhotos >= MAX_PHOTOS_TOTAL) {
+      const message = "Hard stop: you've reached the 300 photo limit. Proceed to review.";
+      setInstruction(message);
+      SpeechOut.speak(message);
+      return;
+    }
     
     // Save locally
     const photo = await StorageAPI.addPhoto(state.project.id, blob, state.currentPhase);
@@ -58,6 +65,14 @@ export const ScanSession: React.FC<ScanSessionProps> = ({ onNavigate }) => {
   const handleNextPhase = useCallback(async () => {
     if (state.currentPhase === 'REVIEW') {
       onNavigate('results');
+      return;
+    }
+
+    const currentPhasePhotos = state.photos.filter(p => p.phase === state.currentPhase).length;
+    if (state.currentPhase.startsWith('CORNER') && currentPhasePhotos < MIN_PHOTOS_PER_CORNER) {
+      const warning = `You need at least ${MIN_PHOTOS_PER_CORNER} photos before moving on.`;
+      setInstruction(warning);
+      SpeechOut.speak(warning);
       return;
     }
 
