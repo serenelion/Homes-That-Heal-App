@@ -1,0 +1,8 @@
+{
+  "name": "Homes That Heal",
+  "description": "AI-native, speech-first scanning assistant for Kiri Engine photogrammetry.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
